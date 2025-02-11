@@ -1,0 +1,22 @@
+name: matrices-2b
+on:
+  workflow_call:
+    inputs:
+      items:
+        description: "Items"
+        required: true
+        type: string
+
+jobs:
+  operation:
+    if: ${{ inputs.items != '{"include":[]}' }}
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 3
+      fail-fast: false # Don't fail fast to avoid locking TF State
+      matrix: ${{ fromJson(inputs.items) }}
+    name: Do (${{ matrix.arch }})
+    steps:
+      - shell: bash
+        run: |
+          echo "Do real work - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ matrix.version }}"
