@@ -2,21 +2,25 @@ name: matrices-2b
 on:
   workflow_call:
     inputs:
-      items:
-        description: "Items"
+      client:
+        description: "client"
+        required: true
+        type: string
+      servers:
+        description: "servers"
         required: true
         type: string
 
 jobs:
   operation:
-    if: ${{ inputs.items != '{"include":[]}' }}
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 3
+      max-parallel: 20
       fail-fast: false # Don't fail fast to avoid locking TF State
-      matrix: ${{ fromJson(inputs.items) }}
-    name: Do (${{ matrix.arch }})
+      matrix:
+        server: ${{ fromJson(inputs.servers) }}
+    name: Do (${{ inputs.client }} -> ${{ matrix.server }})
     steps:
       - shell: bash
         run: |
-          echo "Do real work - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ matrix.version }}"
+          echo "Do real work - ${{ inputs.client }} -> ${{ matrix.server }}"
